@@ -131,15 +131,15 @@ export const Weather = () => {
   }, [fetchCurrentWeather]);
 
   return (
-    <div className={` font-mono w-full h-screen flex flex-col justify-start items-center ${themeMode === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
-      <div className="my-4">
+    <div className={`font-mono w-full h-screen flex flex-col justify-start  ${themeMode === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
+      <div className="m-2 flex justify-end">
          <ThemeBtn  />
          </div>
      
-      <div className="flex flex-row gap-2 m-2 justify-center items-center">
+      <div className="flex flex-row gap-2 m-4 p-4 justify-center items-center">
       <div className="">
         <input
-        className="px-2 border border-gray-200 text-gray-600 text-sm rounded-lg "
+        className={`px-2 border border-gray-200 ${themeMode === 'light' ? 'text-gray-600' : 'text-gray-800 bg-gray-200'} text-sm rounded-lg`}
           type="text"
           placeholder="city"
           value={state.searchCity}
@@ -149,40 +149,39 @@ export const Weather = () => {
         />
       </div>
       <div className="searchCircle">
-        <AiOutlineSearch onClick={handleSearch} />
+        <AiOutlineSearch onClick={handleSearch} style={{ fontSize: '20px', color: '#5c5470' }}/>
       </div>
       </div>
       
-      {state.isLoading && <RiLoaderFill className="loader" />}
+      {state.isLoading && <RiLoaderFill className="loader" /> }
       {state.error && <p className="text-red-600">{state.error}</p>}
       {state.weather && (
         <div className="flex flex-col gap-6 justify-center text-center">
-          <div className="weatherArea">
-            <h1 className="text-2xl text-gray-800">{state.weather.name}</h1>
-            <span className="text-gray-700">{state.weather.sys.country}</span>
+          <div className="weatherArea flex flex-col gap-4">
+            <h1 className={`text-2xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`} >{state.weather.name}</h1>
+            <span className={`${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.sys.country}</span>
             <div className="icon flex justify-center" >
               {renderIcon(state.weather.weather[0].main)}
             </div>
-            <h1 className="text-4xl text-gray-800">{parseFloat(state.weather.main.temp).toFixed(0)} C</h1>
-            <h2 className="text-gray-700">{state.weather.weather[0].main}</h2>
+            <h1 className={`text-4xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{parseFloat(state.weather.main.temp).toFixed(0)}°C</h1>
+            <h2 className={` ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.weather[0].main}</h2>
           </div>
-          <div className="buttomInfoArea flex flex-row justify-between gap-4">
-            <div className="humidity text-gray-700 flex flex-row items-center">
-              <WiHumidity style={{ fontSize: '44px' }}/>
+          <div className="buttomInfoArea flex flex-row justify-center gap-8">
+            <div className={`humidity ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
+              <WiHumidity style={{ fontSize: '50px', color: '#79c2d0' }}/>
               <div className="m-2 humidInfo flex flex-col items-start">
                 <h1>{state.weather.main.humidity}%</h1>
                 <p>Humidity</p>
               </div>
             </div>
             <div className="text-2xl flex items-center text-gray-500">|</div>
-            <div className="wind">
-              <div className="text-gray-700 flex flex-row items-center">
-                <FaWind style={{ fontSize: '30px' }}/>
-                <div className="m-2 windInfo flex flex-col items-start">
+            <div className={`wind ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
+                <FaWind style={{ fontSize: '30px', color: '#79c2d0' }}/>
+                <div className="m-2 p-2 windInfo flex flex-col items-start text-left">
                   <h1>{state.weather.wind.speed.toFixed(0)} km/h</h1>
                   <p>Wind speed</p>
                 </div>
-              </div>
+              
             </div>
           </div>
         </div>
