@@ -1,25 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./index.css";
+import { ThemeBtn } from "./components/ThemeBtn";
+import { Weather } from "./components/Weather";
+import { ThemeProvider } from "./context/darkMode";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [themeMode, setThemeMode] = useState("light");
+  const darkTheme = () => setThemeMode("dark");
+  const lightTheme = () => setThemeMode("light");
+
+  useEffect(() => {
+    document.querySelector('html')?.classList.remove('dark', 'light')
+    document.querySelector('html')?.classList.add(themeMode)
+  }, [themeMode])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider value={{ themeMode, darkTheme, lightTheme }} >
+      
+      <Weather ></Weather>
+    </ThemeProvider>
   );
 }
 
