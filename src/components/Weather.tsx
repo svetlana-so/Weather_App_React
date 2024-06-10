@@ -10,7 +10,6 @@ import {
 } from "react-icons/bs";
 import { RiLoaderFill } from "react-icons/ri";
 import { TiWeatherPartlySunny } from "react-icons/ti";
-import axios from "axios";
 import {
   weatherReducer,
   WeatherProps,
@@ -21,7 +20,7 @@ import { ThemeBtn } from "./ThemeBtn";
 
 const initialState: WeatherState = {
   weather: null,
-  isLoading: false,
+  isLoading: true,
   error: null,
   searchCity: "",
 };
@@ -44,7 +43,7 @@ export const Weather = () => {
 
       case "Clear":
         iconElement = <BsFillSunFill />;
-        iconColor = "#f7fdb1";
+        iconColor = "#f5d061";
         break;
 
       case "Clouds":
@@ -59,7 +58,7 @@ export const Weather = () => {
 
       default:
         iconElement = <TiWeatherPartlySunny />;
-        iconColor = "#f7fdb1";
+        iconColor = "#f5d061";
     }
     return <span style={{ color: iconColor, fontSize: '84px' }} > {iconElement}</span>;
   };
@@ -70,8 +69,9 @@ export const Weather = () => {
         dispatch({ type: "SET_LOADING", payload: true });
         dispatch({ type: "SET_ERROR", payload: null });
         const fullURL = `${url}weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric`;
-        const response = await axios.get(fullURL);
-        return response.data;
+        const response = await fetch(fullURL);
+        const data = response.json()
+        return data;
       } catch (error) {
         dispatch({
           type: "SET_ERROR",
@@ -88,8 +88,9 @@ export const Weather = () => {
   const fetchWeatherData = async (city: string) => {
     try {
       const fullURL = `${url}weather?q=${city}&appid=${api_key}&units=metric`;
-      const response = await axios.get(fullURL);
-      return response.data as WeatherProps;
+      const response = await fetch(fullURL);
+      const data = response.json()
+      return data ;
     } catch (error) {
       dispatch({ type: "SET_ERROR", payload: "Failed to fetch weather data." });
       console.error(error);
@@ -153,39 +154,43 @@ export const Weather = () => {
       </div>
       </div>
       
-      {state.isLoading && <RiLoaderFill className="loader" /> }
-      {state.error && <p className="text-red-600">{state.error}</p>}
-      {state.weather && (
-        <div className="flex flex-col gap-6 justify-center text-center">
-          <div className="weatherArea flex flex-col gap-4">
-            <h1 className={`text-2xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`} >{state.weather.name}</h1>
-            <span className={`${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.sys.country}</span>
-            <div className="icon flex justify-center" >
-              {renderIcon(state.weather.weather[0].main)}
-            </div>
-            <h1 className={`text-4xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{parseFloat(state.weather.main.temp).toFixed(0)}°C</h1>
-            <h2 className={` ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.weather[0].main}</h2>
+      {state.isLoading ? (
+        <div className="flex justify-center my-10 items-center animate-spin">
+          <RiLoaderFill style={{ fontSize: '70px', color: '#79c2d0' }} />
+        </div>
+      
+    ) : state.error ? (
+      <p className="text-red-600">{state.error}</p>
+    ) : state.weather ? (
+      <div className="flex flex-col gap-6 justify-center text-center">
+        <div className="weatherArea flex flex-col gap-4">
+          <h1 className={`text-2xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`} >{state.weather.name}</h1>
+          <span className={`${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.sys.country}</span>
+          <div className="icon flex justify-center" >
+            {renderIcon(state.weather.weather[0].main)}
           </div>
-          <div className="buttomInfoArea flex flex-row justify-center gap-8">
-            <div className={`humidity ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
-              <WiHumidity style={{ fontSize: '50px', color: '#79c2d0' }}/>
-              <div className="m-2 humidInfo flex flex-col items-start">
-                <h1>{state.weather.main.humidity}%</h1>
-                <p>Humidity</p>
-              </div>
+          <h1 className={`text-4xl  ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{parseFloat(state.weather.main.temp).toFixed(0)}°C</h1>
+          <h2 className={` ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'}`}>{state.weather.weather[0].main}</h2>
+        </div>
+        <div className="buttomInfoArea flex flex-row justify-center gap-8">
+          <div className={`humidity ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
+            <WiHumidity style={{ fontSize: '50px', color: '#79c2d0' }}/>
+            <div className="m-2 humidInfo flex flex-col items-start">
+              <h1>{state.weather.main.humidity}%</h1>
+              <p>Humidity</p>
             </div>
-            <div className="text-2xl flex items-center text-gray-500">|</div>
-            <div className={`wind ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
-                <FaWind style={{ fontSize: '30px', color: '#79c2d0' }}/>
-                <div className="m-2 p-2 windInfo flex flex-col items-start text-left">
-                  <h1>{state.weather.wind.speed.toFixed(0)} km/h</h1>
-                  <p>Wind speed</p>
-                </div>
-              
+          </div>
+          <div className="text-2xl flex items-center text-gray-500">|</div>
+          <div className={`wind ${themeMode === 'light' ? 'text-gray-800' : 'text-gray-300'} flex flex-row items-center`}>
+            <FaWind style={{ fontSize: '30px', color: '#79c2d0' }}/>
+            <div className="m-2 p-2 windInfo flex flex-col items-start text-left">
+              <h1>{state.weather.wind.speed.toFixed(0)} km/h</h1>
+              <p>Wind speed</p>
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    ) : null}
+  </div>
+);
 };
